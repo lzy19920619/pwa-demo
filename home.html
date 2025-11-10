@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#0a7cff" />
+  <title>首页 - 移动货品管理系统</title>
+  <link rel="stylesheet" href="/styles/style.css" />
+</head>
+<body>
+  <header>
+    <h1>欢迎使用移动货品管理系统</h1>
+  </header>
+
+  <main>
+    <section id="view-home">
+      <div class="grid-3">
+        <button id="go-in" class="tile">📥 入库管理</button>
+        <button id="go-out" class="tile">📤 出库管理</button>
+        <button id="go-stock" class="tile">📦 库存查询</button>
+        <button id="go-sync" class="tile">🔄 数据同步</button>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/js/home.js"></script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('✅ Service Worker 注册成功'))
+        .catch(err => console.warn('❌ Service Worker 注册失败:', err));
+    });
+  }
+  </script>
+</body>
+</html>

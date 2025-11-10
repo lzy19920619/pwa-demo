@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#0a7cff" />
+  <title>出库管理 - 移动货品管理系统</title>
+  <link rel="stylesheet" href="/styles/style.css" />
+</head>
+<body>
+  <header>
+    <h1>出库管理</h1>
+  </header>
+
+  <main>
+    <section id="view-out">
+      <form id="form-out" class="card row">
+        <input id="out-code" placeholder="扫描/输入条码" required />
+        <input id="out-qty" type="number" placeholder="数量" min="1" value="1" required />
+        <button type="submit" class="primary">出库</button>
+      </form>
+      <ul id="list-out" class="list"></ul>
+    </section>
+  </main>
+
+  <script type="module" src="/js/out.js"></script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('✅ Service Worker 注册成功'))
+        .catch(err => console.warn('❌ Service Worker 注册失败:', err));
+    });
+  }
+  </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#0a7cff" />
+  <title>库存查询 - 移动货品管理系统</title>
+  <link rel="stylesheet" href="/styles/style.css" />
+</head>
+<body>
+  <header>
+    <h1>库存查询</h1>
+  </header>
+
+  <main>
+    <section id="view-stock">
+      <div class="card">
+        <div class="row">
+          <input id="search-code" placeholder="按条码筛选（可选）" />
+          <button id="btn-refresh">刷新</button>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <h2>📥 入库记录</h2>
+          <ul id="stock-in" class="list"></ul>
+        </div>
+        <div>
+          <h2>📤 出库记录</h2>
+          <ul id="stock-out" class="list"></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/js/stock.js"></script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('✅ Service Worker 注册成功'))
+        .catch(err => console.warn('❌ Service Worker 注册失败:', err));
+    });
+  }
+  </script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#0a7cff" />
+  <title>登录 - 移动货品管理系统</title>
+  <link rel="stylesheet" href="/styles/style.css" />
+</head>
+<body>
+  <header>
+    <h1>移动货品管理系统</h1>
+  </header>
+
+  <main>
+    <section id="view-login">
+      <h2>登录</h2>
+      <form id="login-form" class="card">
+        <label>用户名</label>
+        <input id="login-username" placeholder="admin" required />
+        <label>密码</label>
+        <input id="login-password" type="password" placeholder="123456" required />
+        <button type="submit" class="primary">登录</button>
+      </form>
+    </section>
+  </main>
+
+  <script type="module" src="/js/login.js"></script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('✅ Service Worker 注册成功'))
+        .catch(err => console.warn('❌ Service Worker 注册失败:', err));
+    });
+  }
+  </script>
+</body>
+</html>
