@@ -6,33 +6,550 @@
   <link rel="manifest" href="/manifest.webmanifest" />
   <meta name="theme-color" content="#0a7cff" />
   <title>首页 - 移动货品管理系统</title>
-  <link rel="stylesheet" href="/styles/style.css" />
+  <style>
+    /* 全局样式 */
+    :root {
+      --bg: #f7f9fc;
+      --card: #fff;
+      --txt: #111;
+      --muted: #666;
+      --brand: #0a7cff;
+      --danger: #c00;
+      --ok: #0a7c2f;
+      --border: #e0e0e0;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--txt);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      height: 100%;
+    }
+    
+    /* 顶部导航栏 */
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: #fff;
+      border-bottom: 1px solid #eaeaea;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      height: 60px;
+    }
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+    }
+    
+    .back-btn {
+      background: none;
+      border: none;
+      font-size: 20px;
+      margin-right: 15px;
+      cursor: pointer;
+      color: var(--brand);
+    }
+    
+    .header-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    /* 用户信息区域 */
+    .user-info {
+      background: var(--card);
+      margin: 16px;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .info-row {
+      display: flex;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+    
+    .info-label {
+      width: 100px;
+      color: var(--muted);
+    }
+    
+    .info-value {
+      flex: 1;
+      font-weight: 500;
+    }
+    
+    /* 九宫格按钮区域 */
+    .grid-container {
+      margin: 16px;
+    }
+    
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 12px 0;
+    }
+    
+    .grid-item {
+      padding: 25px 10px;
+      font-size: 16px;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid #e8edf5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 100px;
+    }
+    
+    .grid-item:hover {
+      background: #f5f9ff;
+      border-color: var(--brand);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+    
+    .grid-item:active {
+      transform: translateY(0);
+    }
+    
+    .grid-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    
+    .grid-text {
+      text-align: center;
+      font-weight: 500;
+    }
+    
+    .empty-item {
+      background: #f9f9f9;
+      border: 1px dashed #ddd;
+      color: #aaa;
+      cursor: default;
+    }
+    
+    .empty-item:hover {
+      background: #f9f9f9;
+      border: 1px dashed #ddd;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    /* 作业分配弹窗样式 */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .task-modal {
+      background: white;
+      width: 85%;
+      max-width: 400px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      overflow: hidden;
+    }
+    
+    .modal-header {
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .modal-options {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .modal-option {
+      padding: 18px 20px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      display: flex;
+      align-items: center;
+    }
+    
+    .modal-option:last-child {
+      border-bottom: none;
+    }
+    
+    .modal-option:hover {
+      background: #f5f9ff;
+    }
+    
+    .option-icon {
+      margin-right: 12px;
+      font-size: 20px;
+    }
+    
+    .option-text {
+      font-size: 16px;
+    }
+    
+    .modal-footer {
+      padding: 15px;
+      text-align: center;
+      border-top: 1px solid #eee;
+    }
+    
+    .cancel-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 8px 16px;
+    }
+    
+    .cancel-btn:hover {
+      color: var(--txt);
+    }
+    
+    /* 其他页面共用样式 - 从原CSS保留 */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      color: var(--brand);
+    }
+    
+    .logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+    }
+    
+    nav button {
+      margin-left: 8px;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    
+    h1 {
+      margin: 8px 0 12px;
+    }
+    
+    h2 {
+      margin: 12px 0 8px;
+    }
+    
+    .card {
+      background: var(--card);
+      padding: 12px;
+      border-radius: 12px;
+      box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    }
+    
+    .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .tile {
+      padding: 18px;
+      font-size: 18px;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid #e8edf5;
+    }
+    
+    input, button {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #d5dbe6;
+      font-size: 14px;
+    }
+    
+    button {
+      cursor: pointer;
+      background: #fff;
+    }
+    
+    button.primary {
+      background: var(--brand);
+      color: #fff;
+      border-color: var(--brand);
+    }
+    
+    button.danger {
+      background: var(--danger);
+      color: #fff;
+      border-color: var(--danger);
+    }
+    
+    .list {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0;
+    }
+    
+    .list li {
+      background: #fff;
+      border: 1px solid #eef1f6;
+      padding: 10px 12px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .badge {
+      padding: 2px 6px;
+      border-radius: 8px;
+      font-size: 12px;
+      background: #eef5ff;
+      color: #1a6cff;
+    }
+    
+    .meta {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    
+    .status {
+      margin-top: 10px;
+    }
+    
+    .status-online {
+      color: var(--ok);
+    }
+    
+    .status-offline {
+      color: var(--danger);
+    }
+    
+    footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 24px 12px;
+    }
+    
+    @media (max-width:720px) {
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>欢迎使用移动货品管理系统</h1>
+  <!-- 顶部导航栏 -->
+  <header class="app-header">
+    <div class="header-left">
+      <button id="back-btn" class="back-btn">←</button>
+      <div class="header-title">功能菜单</div>
+    </div>
   </header>
 
   <main>
     <section id="view-home">
-      <div class="grid-3">
-        <button id="go-in" class="tile">📥 入库管理</button>
-        <button id="go-out" class="tile">📤 出库管理</button>
-        <button id="go-stock" class="tile">📦 库存查询</button>
-        <button id="go-sync" class="tile">🔄 数据同步</button>
+      <!-- 用户信息区域 -->
+      <div class="user-info">
+        <div class="info-row">
+          <div class="info-label">用户：</div>
+          <div class="info-value" id="user-name">XXX</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">区部：</div>
+          <div class="info-value" id="user-department">北京区部</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">部门：</div>
+          <div class="info-value" id="user-division">零售部</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">当前仓库：</div>
+          <div class="info-value" id="current-warehouse">SP003810 京丰台万达AD MEGA</div>
+        </div>
+      </div>
+      
+      <!-- 九宫格按钮区域 -->
+      <div class="grid-container">
+        <div class="grid-3">
+          <button id="go-assign" class="grid-item">
+            <div class="grid-icon">📋</div>
+            <div class="grid-text">作业分配</div>
+          </button>
+          <button id="go-in" class="grid-item">
+            <div class="grid-icon">📥</div>
+            <div class="grid-text">入库扫描</div>
+          </button>
+          <button id="go-out" class="grid-item">
+            <div class="grid-icon">📤</div>
+            <div class="grid-text">出库扫描</div>
+          </button>
+          <button id="go-sync" class="grid-item">
+            <div class="grid-icon">🔄</div>
+            <div class="grid-text">数据同步</div>
+          </button>
+          <button id="go-settings" class="grid-item">
+            <div class="grid-icon">⚙️</div>
+            <div class="grid-text">系统设置</div>
+          </button>
+          <div class="grid-item empty-item">
+            <div class="grid-text">预留</div>
+          </div>
+          <div class="grid-item empty-item">
+            <div class="grid-text">预留</div>
+          </div>
+          <div class="grid-item empty-item">
+            <div class="grid-text">预留</div>
+          </div>
+          <div class="grid-item empty-item">
+            <div class="grid-text">预留</div>
+          </div>
+        </div>
       </div>
     </section>
   </main>
 
-  <script type="module" src="/js/home.js"></script>
+  <!-- 作业分配弹窗 -->
+  <div id="task-modal" class="modal-overlay">
+    <div class="task-modal">
+      <div class="modal-header">作业分配</div>
+      <div class="modal-options">
+        <div class="modal-option" data-target="task-assign.html">
+          <div class="option-icon">📝</div>
+          <div class="option-text">任务分配</div>
+        </div>
+        <div class="modal-option" data-target="merge-order.html">
+          <div class="option-icon">📄</div>
+          <div class="option-text">合并单据</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="cancel-btn">取消</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(() => console.log('✅ Service Worker 注册成功'))
-        .catch(err => console.warn('❌ Service Worker 注册失败:', err));
+    // 页面跳转函数
+    function go(page) {
+      window.location.href = page;
+    }
+
+    // 页面加载完成后执行
+    document.addEventListener('DOMContentLoaded', function() {
+      // 校验登录状态
+      if (!localStorage.getItem('authed')) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      // 获取用户信息
+      const username = localStorage.getItem('username') || 'XXX';
+      const userDepartment = localStorage.getItem('userDepartment') || '北京区部';
+      const userDivision = localStorage.getItem('userDivision') || '零售部';
+      
+      // 获取仓库信息
+      let warehouseInfo = 'SP003810 京丰台万达AD MEGA';
+      try {
+        const selectedWarehouse = JSON.parse(localStorage.getItem('selectedWarehouse'));
+        if (selectedWarehouse && selectedWarehouse.code && selectedWarehouse.name) {
+          warehouseInfo = `${selectedWarehouse.code} ${selectedWarehouse.name}`;
+        }
+      } catch (e) {
+        console.warn('无法解析仓库信息:', e);
+      }
+      
+      // 更新用户信息显示
+      document.getElementById('user-name').textContent = username;
+      document.getElementById('user-department').textContent = userDepartment;
+      document.getElementById('user-division').textContent = userDivision;
+      document.getElementById('current-warehouse').textContent = warehouseInfo;
+
+      // 返回按钮事件
+      document.getElementById('back-btn').addEventListener('click', function() {
+        // 清除登录状态
+        localStorage.removeItem('authed');
+        localStorage.removeItem('username');
+        localStorage.removeItem('selectedWarehouse');
+        
+        // 跳转到登录页面
+        window.location.href = '/login.html';
+      });
+
+      // 作业分配按钮事件 - 显示弹窗
+      document.getElementById('go-assign').addEventListener('click', function() {
+        document.getElementById('task-modal').style.display = 'flex';
+      });
+
+      // 弹窗选项点击事件
+      const modalOptions = document.querySelectorAll('.modal-option');
+      modalOptions.forEach(option => {
+        option.addEventListener('click', function() {
+          const targetPage = this.getAttribute('data-target');
+          go(targetPage);
+        });
+      });
+
+      // 弹窗取消按钮事件
+      document.querySelector('.cancel-btn').addEventListener('click', function() {
+        document.getElementById('task-modal').style.display = 'none';
+      });
+
+      // 点击弹窗外部关闭弹窗
+      document.getElementById('task-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.style.display = 'none';
+        }
+      });
+
+      // 其他按钮事件
+      document.getElementById('go-in').addEventListener('click', () => go('/in.html'));
+      document.getElementById('go-out').addEventListener('click', () => go('/out.html'));
+      document.getElementById('go-sync').addEventListener('click', () => go('/sync.html'));
+      document.getElementById('go-settings').addEventListener('click', () => go('/settings.html'));
     });
-  }
+  </script>
+  
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(() => console.log('✅ Service Worker 注册成功'))
+          .catch(err => console.warn('❌ Service Worker 注册失败:', err));
+      });
+    }
   </script>
 </body>
 </html>

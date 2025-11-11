@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0a7cff" />
+  <title>选择仓库 - 移动货品管理系统</title>
+  <style>
+    /* 全局样式 */
+    :root {
+      --bg: #f7f9fc;
+      --card: #fff;
+      --txt: #111;
+      --muted: #666;
+      --brand: #0a7cff;
+      --danger: #c00;
+      --ok: #0a7c2f;
+      --header-bg: #f0f2f5;
+      --border: #e0e0e0;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--txt);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      height: 100%;
+    }
+    
+    /* 仓库选择页面专用样式 */
+    .warehouse-page {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    /* 头部区域 - 占1/4高度 */
+    .warehouse-header {
+      height: 25vh;
+      background: var(--header-bg);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .warehouse-header h1 {
+      font-size: 34px;
+      margin: 0 0 8px 0;
+      color: #333;
+      font-weight: 700;
+    }
+    
+    .warehouse-header p {
+      font-size: 34px;
+      margin: 0;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    
+    /* 主体区域 - 占3/4高度 */
+    .warehouse-main {
+      flex: 1;
+      padding: 25px 20px 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* 提示语 */
+    .warehouse-tip {
+      text-align: center;
+      font-size: 18px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    
+    /* 搜索框 */
+    .search-box {
+      margin-bottom: 20px;
+    }
+    
+    .search-box input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      font-size: 16px;
+      background-color: #f9f9f9;
+    }
+    
+    /* 仓库列表 */
+    .warehouse-list {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+    
+    .warehouse-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .warehouse-item:hover {
+      background-color: #f5f9ff;
+      border-color: var(--brand);
+    }
+    
+    .warehouse-item.selected {
+      background-color: #e8f2ff;
+      border-color: var(--brand);
+    }
+    
+    .warehouse-radio {
+      margin-right: 15px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    
+    .warehouse-item.selected .warehouse-radio {
+      border-color: var(--brand);
+      background-color: var(--brand);
+    }
+    
+    .warehouse-item.selected .warehouse-radio::after {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: white;
+    }
+    
+    .warehouse-info {
+      flex: 1;
+    }
+    
+    .warehouse-code {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #333;
+    }
+    
+    .warehouse-name {
+      font-size: 16px;
+      color: var(--muted);
+    }
+    
+    /* 确认按钮 */
+    .confirm-btn {
+      padding: 16px;
+      border-radius: 10px;
+      background: var(--brand);
+      color: #fff;
+      font-size: 18px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.2s ease;
+    }
+    
+    .confirm-btn:hover {
+      background: #0969d9;
+    }
+    
+    .confirm-btn:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+    }
+    
+    /* 弹窗样式 */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal-content {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 80%;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    
+    .modal-buttons {
+      margin-top: 20px;
+    }
+    
+    .modal-buttons button {
+      padding: 10px 20px;
+      border-radius: 6px;
+      border: none;
+      background: var(--brand);
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="warehouse-page">
+  <!-- 头部区域 - 占1/4高度 -->
+  <div class="warehouse-header">
+    <h1>强中台</h1>
+    <p>出入库移动管理平台</p>
+  </div>
+
+  <!-- 主体区域 - 占3/4高度 -->
+  <div class="warehouse-main">
+    <div class="warehouse-tip">首次登录，请选择仓库</div>
+    
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="支持按仓库代码或仓库名称过滤">
+    </div>
+    
+    <div class="warehouse-list" id="warehouse-list">
+      <!-- 仓库选项将通过JS动态生成 -->
+    </div>
+    
+    <button id="confirm-btn" class="confirm-btn" disabled>确认</button>
+  </div>
+
+  <!-- 选择确认弹窗 -->
+  <div id="confirm-modal" class="modal">
+    <div class="modal-content">
+      <p id="confirm-message">确定要选择这个仓库吗？</p>
+      <div class="modal-buttons">
+        <button id="final-confirm">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 仓库数据
+    const warehouses = [
+      {
+        code: "SP003810",
+        name: "京丰台万达AD MEGA"
+      },
+      {
+        code: "SP003981",
+        name: "京丰台万达AD MEGA临时"
+      }
+    ];
+
+    // 初始化页面
+    document.addEventListener('DOMContentLoaded', function() {
+      const warehouseList = document.getElementById('warehouse-list');
+      const searchInput = document.getElementById('search-input');
+      const confirmBtn = document.getElementById('confirm-btn');
+      const confirmModal = document.getElementById('confirm-modal');
+      const confirmMessage = document.getElementById('confirm-message');
+      const finalConfirmBtn = document.getElementById('final-confirm');
+      
+      let selectedWarehouse = null;
+      let filteredWarehouses = [...warehouses];
+      
+      // 渲染仓库列表
+      function renderWarehouseList() {
+        warehouseList.innerHTML = '';
+        
+        filteredWarehouses.forEach(warehouse => {
+          const item = document.createElement('div');
+          item.className = 'warehouse-item';
+          if (selectedWarehouse && selectedWarehouse.code === warehouse.code) {
+            item.classList.add('selected');
+          }
+          
+          item.innerHTML = `
+            <div class="warehouse-radio"></div>
+            <div class="warehouse-info">
+              <div class="warehouse-code">${warehouse.code}</div>
+              <div class="warehouse-name">${warehouse.name}</div>
+            </div>
+          `;
+          
+          item.addEventListener('click', () => {
+            selectWarehouse(warehouse);
+          });
+          
+          warehouseList.appendChild(item);
+        });
+      }
+      
+      // 选择仓库
+      function selectWarehouse(warehouse) {
+        selectedWarehouse = warehouse;
+        renderWarehouseList();
+        confirmBtn.disabled = false;
+      }
+      
+      // 搜索功能
+      searchInput.addEventListener('input', function() {
+        const keyword = this.value.toLowerCase().trim();
+        
+        if (keyword === '') {
+          filteredWarehouses = [...warehouses];
+        } else {
+          filteredWarehouses = warehouses.filter(warehouse => 
+            warehouse.code.toLowerCase().includes(keyword) || 
+            warehouse.name.toLowerCase().includes(keyword)
+          );
+        }
+        
+        renderWarehouseList();
+      });
+      
+      // 确认按钮点击
+      confirmBtn.addEventListener('click', function() {
+        if (selectedWarehouse) {
+          confirmMessage.textContent = `确定要选择仓库：${selectedWarehouse.name} 吗？`;
+          confirmModal.style.display = 'flex';
+        }
+      });
+      
+      // 最终确认
+      finalConfirmBtn.addEventListener('click', function() {
+        confirmModal.style.display = 'none';
+        
+        // 保存选择的仓库信息
+        localStorage.setItem('selectedWarehouse', JSON.stringify(selectedWarehouse));
+        
+        // 显示选择成功消息
+        alert(`您已选择仓库：${selectedWarehouse.name}`);
+        
+        // 跳转到home页面
+        window.location.href = '/home.html';
+      });
+      
+      // 点击弹窗外部关闭弹窗
+      confirmModal.addEventListener('click', function(e) {
+        if (e.target === confirmModal) {
+          confirmModal.style.display = 'none';
+        }
+      });
+      
+      // 初始渲染
+      renderWarehouseList();
+    });
+     // Service Worker 注册
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(() => console.log('✅ Service Worker 注册成功'))
+          .catch(err => console.warn('❌ Service Worker 注册失败:', err));
+      });
+    }
+  </script>
+</body>
+</html>

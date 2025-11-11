@@ -13,6 +13,11 @@ const STATIC_ASSETS = [
   '/out.html',
   '/stock.html',
   '/sync.html',
+  '/warehouse.html',
+  '/settings.html',
+  '/assign.html',
+  '/merge-order.html',
+  '/task-assign.html',
 
   // 样式与脚本
   '/styles/style.css',
