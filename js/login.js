@@ -2,5 +2,5 @@
 document.getElementById('login-form').addEventListener('submit', (e) => {
   e.preventDefault();
   localStorage.setItem('authed', 'true');
-  window.location.href = '/home.html';
+  window.location.href = '/warehouse.html';
 });
